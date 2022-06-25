@@ -1,0 +1,13 @@
+{
+  "name": "@monitor-javascript/idb",
+  "version": "1.0.0",
+  "description": "window.indexedDB",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "class-transformer": "^0.5.1",
+    "utility-types": "^3.10.0"
+  }
+}

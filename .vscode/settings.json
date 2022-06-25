@@ -1,0 +1,7 @@
+{
+    "typescirpt.tsdk": "../node_modules/typescript/lib",
+    "cSpell.words": [
+        "accum",
+        "autoincrement"
+    ]
+}

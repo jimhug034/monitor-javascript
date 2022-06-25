@@ -1,0 +1,53 @@
+{
+  "name": "monitor-javascript",
+  "version": "0.0.1",
+  "private": true,
+  "description": "monitor javascript sdk",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "dev:core": "pnpm start --filter \"@monitor-javascript/core\"",
+    "lint": "eslint --ext .ts packages/*/{lib}/**.ts",
+    "format": "prettier --write --parser typescript \"packages/**/*.ts?(x)\"",
+    "prepare": "husky install",
+    "preinstall": "node ./scripts/preinstall.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jimhug034/monitor-javascript.git"
+  },
+  "keywords": [
+    "monitor",
+    "javascript",
+    "typescript",
+    "javascript"
+  ],
+  "author": "jimhug034",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/jimhug034/monitor-javascript/issues"
+  },
+  "homepage": "https://github.com/jimhug034/monitor-javascript#readme",
+  "devDependencies": {
+    "@changesets/cli": "^2.23.0",
+    "@commitlint/cli": "^17.0.2",
+    "@commitlint/config-conventional": "^17.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.29.0",
+    "@typescript-eslint/parser": "^5.29.0",
+    "commitlint": "^17.0.2",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-prettier": "^4.0.0",
+    "husky": "^8.0.1",
+    "prettier": "^2.7.1",
+    "reflect-metadata": "^0.1.13",
+    "typescript": "^4.6.4"
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix"
+  }
+}
