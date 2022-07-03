@@ -1,0 +1,74 @@
+{
+  "name": "monitor-javascript",
+  "version": "0.0.1",
+  "private": true,
+  "description": "monitor javascript sdk",
+  "main": "index.js",
+  "type": "module",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "lint": "eslint --ext .ts packages/*/lib/**.ts",
+    "format": "prettier --write --parser typescript \"packages/**/*.ts?(x)\"",
+    "prepare": "husky install",
+    "preinstall": "node ./scripts/preinstall.js",
+    "build": "node ./scripts/build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jimhug034/monitor-javascript.git"
+  },
+  "keywords": [
+    "monitor",
+    "javascript",
+    "typescript",
+    "javascript"
+  ],
+  "author": "jimhug034",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/jimhug034/monitor-javascript/issues"
+  },
+  "homepage": "https://github.com/jimhug034/monitor-javascript#readme",
+  "devDependencies": {
+    "@babel/core": "^7.18.6",
+    "@changesets/cli": "^2.23.0",
+    "@commitlint/cli": "^17.0.2",
+    "@commitlint/config-conventional": "^17.0.2",
+    "@microsoft/api-extractor": "^7.28.2",
+    "@rollup/plugin-babel": "^5.3.1",
+    "@rollup/plugin-json": "^4.1.0",
+    "@rollup/plugin-replace": "^4.0.0",
+    "@typescript-eslint/eslint-plugin": "^5.29.0",
+    "@typescript-eslint/parser": "^5.29.0",
+    "chalk": "^5.0.1",
+    "commitlint": "^17.0.2",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.25.2",
+    "eslint-plugin-prettier": "^4.0.0",
+    "execa": "^6.1.0",
+    "fs-extra": "^10.1.0",
+    "husky": "^8.0.1",
+    "minimist": "^1.2.6",
+    "prettier": "^2.7.1",
+    "reflect-metadata": "^0.1.13",
+    "rollup": "^2.75.7",
+    "rollup-plugin-polyfill-node": "^0.9.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.32.1",
+    "tslib": "^2.4.0",
+    "typescript": "^4.6.4"
+  },
+  "lint-staged": {
+    "*.js": "eslint --cache --fix"
+  },
+  "dependencies": {
+    "rimraf": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=16.14.0"
+  }
+}

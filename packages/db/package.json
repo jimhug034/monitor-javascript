@@ -1,0 +1,31 @@
+{
+  "name": "@monitor-javascript/idb",
+  "version": "1.0.0",
+  "description": "window.indexedDB Promise lib",
+  "main": "index.js",
+  "module": "dist/db.esm-bundler.js",
+  "type": "module",
+  "files": [
+    "index.js",
+    "dist"
+  ],
+  "keywords": [
+    "Javascript",
+    "TypeScript",
+    "indexedDB",
+    "indexedDB Promise"
+  ],
+  "sideEffects": false,
+  "buildOptions": {
+    "formats": [
+      "esm-bundler",
+      "umd"
+    ]
+  },
+  "author": "jimhug034",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "class-transformer": "^0.5.1",
+    "utility-types": "^3.10.0"
+  }
+}

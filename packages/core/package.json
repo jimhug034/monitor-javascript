@@ -1,0 +1,21 @@
+{
+  "name": "@monitor-javascript/core",
+  "version": "0.0.1",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "module": "dist/core.esm-bundler.js",
+   "files": [
+    "index.js",
+    "dist"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "husky": "^8.0.1"
+  }
+}
