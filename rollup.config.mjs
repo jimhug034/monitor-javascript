@@ -102,7 +102,16 @@ function createConfig(format, output, plugins = []) {
         isBrowserESMBuild
       ),
       ...plugins
-    ]
+    ],
+    output,
+    onwarn: (msg, warn) => {
+      if (!/Circular/.test(msg)) {
+        warn(msg)
+      }
+    },
+    treeshake: {
+      moduleSideEffects: false
+    }
   }
 }
 
