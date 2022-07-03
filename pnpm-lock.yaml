@@ -67,6 +67,20 @@ importers:
       tslib: 2.4.0
       typescript: registry.npmmirror.com/typescript/4.6.4
 
+  packages/core:
+    specifiers:
+      husky: ^8.0.1
+    devDependencies:
+      husky: 8.0.1
+
+  packages/db:
+    specifiers:
+      class-transformer: ^0.5.1
+      utility-types: ^3.10.0
+    devDependencies:
+      class-transformer: 0.5.1
+      utility-types: 3.10.0
+
 packages:
 
   /@ampproject/remapping/2.2.0:
