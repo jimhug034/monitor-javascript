@@ -1,4 +1,4 @@
-import { DBError } from './index'
+import { DBError } from './error'
 import { configSchema } from './schema'
 import { IDBConfig, IDBTables, SchemaResult, ValueOf } from './types'
 
