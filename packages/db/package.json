@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "window.indexedDB Promise lib",
   "main": "index.js",
-  "module": "dist/@monitor-javascript/idb.esm-bundler.js",
-  "types": "dist/@monitor-javascript/idb.d.ts",
+  "module": "dist/db.esm-bundler.js",
   "type": "module",
   "files": [
     "index.js",
@@ -18,9 +17,9 @@
   ],
   "sideEffects": false,
   "buildOptions": {
-    "name": "@monitor-javascript/idb",
     "formats": [
-      "esm-bundler"
+      "esm-bundler",
+      "umd"
     ]
   },
   "author": "jimhug034",

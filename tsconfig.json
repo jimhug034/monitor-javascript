@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "outDir": "dist",
     "target": "es2016",                                  /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */
     "module": "esnext",                                /* Specify what module code is generated. */
     "esModuleInterop": true,                             /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables `allowSyntheticDefaultImports` for type compatibility. */
@@ -12,10 +13,13 @@
     "declaration": true,
     "moduleResolution": "node",
     "noEmit": true,
-    "baseUrl": "./",
+    "baseUrl": ".",
+    "rootDir": ".",
     "lib": ["ESNext", "DOM"],
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "allowJs": false,
+    "useDefineForClassFields": false,
 
   },
   "include":[

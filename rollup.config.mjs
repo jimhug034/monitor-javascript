@@ -27,15 +27,20 @@ const outputConfigs = {
   'esm-bundler': {
     file: resolve(`dist/${name}.esm-bundler.js`),
     format: `es`
+  },
+  umd: {
+    file: resolve(`dist/${name}.umd-bundler.js`),
+    name,
+    format: `umd`
   }
 }
 
-const defaultFormats = ['esm-bundler']
+const defaultFormats = ['esm-bundler', 'umd']
 const inlineFormats = process.env.FORMATS && process.env.FORMATS.split(',')
 const packageFormats = inlineFormats || packageOptions.formats || defaultFormats
-const packageConfigs = process.env.PROD_ONLY
-  ? []
-  : packageFormats.map(format => createConfig(format, outputConfigs[format]))
+const packageConfigs = packageFormats.map(format =>
+  createConfig(format, outputConfigs[format])
+)
 
 export default packageConfigs
 
@@ -60,7 +65,6 @@ function createConfig(format, output, plugins = []) {
   const tsPlugin = ts({
     check: process.env.NODE_ENV === 'production' && !hasTSChecked,
     tsconfig: path.resolve(__dirname, 'tsconfig.json'),
-    cacheRoot: path.resolve(__dirname, 'node_modules/.rts2_cache'),
     tsconfigOverride: {
       compilerOptions: {
         target: 'es2015',
@@ -133,16 +137,7 @@ function createReplacePlugin(
     // If the build is expected to run directly in the browser (global / esm builds)
     __ESM_BUNDLER__: isBundlerESMBuild,
     __ESM_BROWSER__: isBrowserESMBuild,
-    __NODE_JS__: isNodeBuild,
-
-    // for compiler-sfc browser build inlined deps
-    ...(isBrowserESMBuild
-      ? {
-          'process.env': '({})',
-          'process.platform': '""',
-          'process.stdout': 'null'
-        }
-      : {})
+    __NODE_JS__: isNodeBuild
   }
   // allow inline overrides like
   Object.keys(replacements).forEach(key => {

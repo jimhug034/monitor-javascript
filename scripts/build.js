@@ -4,6 +4,8 @@ import chalk from 'chalk'
 import { execaSync, execa } from 'execa'
 import { allTargets, fuzzyMatchTarget } from './utils.js'
 import minimist from 'minimist'
+import { fileURLToPath } from 'url'
+
 const args = minimist(process.argv.slice(2))
 const targets = args._
 const formats = args.formats || args.f
@@ -14,6 +16,9 @@ const isRelease = args.release
 const buildTypes = args.t || args.types || isRelease
 const buildAllMatching = args.all || args.a
 const commit = execaSync('git', ['rev-parse', 'HEAD']).stdout.slice(0, 7)
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 run()
 
@@ -39,7 +44,6 @@ async function buildAll(targets) {
 async function runParallel(maxConcurrency, source, iteratorFn) {
   const ret = []
   const executing = []
-  console.log('source', source, iteratorFn)
   for (const item of source) {
     const p = Promise.resolve().then(() => iteratorFn(item, source))
     ret.push(p)
@@ -94,7 +98,6 @@ async function build(target) {
       stdio: 'inherit'
     }
   )
-
   if (buildTypes && pkg.types) {
     console.log()
     console.log(
