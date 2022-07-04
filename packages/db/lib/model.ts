@@ -1,6 +1,5 @@
 import { Optional } from 'utility-types'
-import { DB } from '.'
-import { getPrimaryKey } from './Decorators'
+import { DB } from './Database'
 import { IDBTables, OptionsType, TimeStampsType } from './types'
 import { ClassConstructor, plainToInstance } from 'class-transformer'
 import ArraySorter from './array-sorter'
@@ -9,6 +8,7 @@ export default class Model<DataType extends Optional<TimeStampsType>> {
   constructor(
     private readonly db: IDBDatabase,
     private readonly table: IDBTables,
+    // eslint-disable-next-line @typescript-eslint/ban-types
     private readonly tableClass: Function | null = null
   ) {}
 
@@ -23,9 +23,6 @@ export default class Model<DataType extends Optional<TimeStampsType>> {
           })
         }
 
-        const primary = { key: '' }
-        primary.key = getPrimaryKey(this.tableClass!) as string
-
         const request = this.db
           .transaction(this.table.name, 'readwrite')
           .objectStore(this.table.name)
@@ -33,13 +30,7 @@ export default class Model<DataType extends Optional<TimeStampsType>> {
 
         request.onerror = () =>
           reject(request.error || 'Unable to add data. Check the unique values')
-        request.onsuccess = () =>
-          resolve(
-            this.resolveValue({
-              ...data,
-              ...(primary.key && { [primary.key]: request.result })
-            }) as DataType
-          )
+        request.onsuccess = () => resolve(this.resolveValue(data) as DataType)
       } catch (error) {
         return reject(error)
       }
@@ -110,21 +101,12 @@ export default class Model<DataType extends Optional<TimeStampsType>> {
         const transaction = this.db.transaction(this.table.name, 'readwrite')
         const store = transaction.objectStore(this.table.name)
         const data = Object.assign(fetchedData, dataToUpdate)
-        const primary = { key: '' }
-        if (this.tableClass) {
-          primary.key = getPrimaryKey(this.tableClass) as string
-        }
 
         if (this.table.timestamps) data.createdAt = Date.now()
         const save = store.put(data)
         save.onerror = () => reject(save.error || `Couldn't update data`)
         save.onsuccess = () => {
-          resolve(
-            this.resolveValue({
-              ...data,
-              ...(primary.key && { [primary.key]: save.result })
-            }) as DataType
-          )
+          resolve(this.resolveValue(data) as DataType)
         }
       })
     })
@@ -150,7 +132,7 @@ export default class Model<DataType extends Optional<TimeStampsType>> {
       if (!data) return []
 
       if (typeof options.where === 'function') {
-        result = options.where(data)
+        result = options.where(data) as DataType[]
       } else {
         const whereKeys = Object.keys(options.where)
         result = data.filter(item => {
@@ -158,7 +140,8 @@ export default class Model<DataType extends Optional<TimeStampsType>> {
           for (const key of whereKeys) {
             if (
               dataKeys.includes(key) &&
-              (item as any)[key] === (options.where as Function)[key]
+              // eslint-disable-next-line @typescript-eslint/ban-types
+              (item as any)[key] === (options.where as any)[key]
             )
               return true
             return false
