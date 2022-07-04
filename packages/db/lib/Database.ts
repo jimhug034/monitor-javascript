@@ -22,7 +22,7 @@ export class DB {
 
   databaseVersion: number
 
-  private _db: IDBDatabase | null = null
+  private _db: IDBDatabase | undefined = undefined
 
   constructor(protected readonly schema: IDBConfig) {
     if (Array.isArray(schema)) {

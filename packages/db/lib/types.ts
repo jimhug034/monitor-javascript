@@ -42,8 +42,8 @@ export type OptionsWhereAsObject<T extends keyof any = any> = {
   [key in T]: IDBValidKey | IDBKeyRange
 }
 
-export type OptionsType<I, T extends keyof any = any> = {
-  where?: OptionsWhereAsObject<T> | OptionsWhereAsCallback<I>
+export type OptionsType<I, U extends keyof any = any> = {
+  where?: OptionsWhereAsObject<U> | OptionsWhereAsCallback<I>
   limit?: number
   orderByDESC?: boolean
   sortBy?: keyof I | keyof I[]
