@@ -4,24 +4,24 @@ type PropObject = {
 }
 export type Props = PropObject | string | null
 
-export default class ArraySorter<ItemType> {
-  constructor(private readonly listToBeSorted: ItemType[]) {
+export default class ArraySorter<T extends { [key: string]: any }> {
+  constructor(private readonly listToBeSorted: T[]) {
     if (!Array.isArray(listToBeSorted)) {
       throw new Error('The list to be sorted must be an array')
     }
   }
 
-  public sortBy(props: Props = null): ItemType[] {
+  public sortBy(props: Props = null): T[] {
     type Ref = {
-      sorted: ItemType[] | Array<string | number | null | undefined | symbol>
-      keys: string | string[] | null
+      sorted: T[] | Array<string | number | null | undefined | symbol>
+      keys: string | string[] | undefined
     }
-    const ref: Ref = { sorted: this.listToBeSorted, keys: null }
+    const ref: Ref = { sorted: this.listToBeSorted, keys: undefined }
     if (props?.hasOwnProperty('keys')) ref.keys = (props as PropObject).keys
     if (typeof props === 'string') ref.keys = [props]
     if (Array.isArray(ref.keys)) {
       ref.keys.forEach(key => {
-        ref.sorted = this.sortListOfObjects(ref.sorted as ItemType[], key)
+        ref.sorted = this.sortListOfObjects(ref.sorted as T[], key)
       })
     } else {
       ref.sorted = this.sortPlainList(ref.sorted as Array<string | number>)
@@ -33,11 +33,11 @@ export default class ArraySorter<ItemType> {
       ).reverse()
     }
 
-    return ref.sorted as ItemType[]
+    return ref.sorted as T[]
   }
 
   private sortPlainList(data: Array<string | number>) {
-    return data.sort(function (next, current) {
+    return data.sort((next, current) => {
       // Sorting by number key
       if (!isNaN(current as number) && !isNaN(next as number)) {
         return (next as number) - (current as number)
@@ -51,11 +51,8 @@ export default class ArraySorter<ItemType> {
     })
   }
 
-  private sortListOfObjects(data: ItemType[], key: string): ItemType[] {
-    return data.sort(function (
-      next: { [key: string]: any },
-      current: { [key: string]: any }
-    ) {
+  private sortListOfObjects(data: T[], key: string): T[] {
+    return data.sort((next, current) => {
       // Sorting by number key
       if (!isNaN(current[key]) && !isNaN(next[key])) {
         return next[key] - current[key]

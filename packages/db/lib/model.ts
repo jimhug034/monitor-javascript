@@ -1,30 +1,27 @@
 import { Optional } from 'utility-types'
-import { DB } from '.'
-import { getPrimaryKey } from './Decorators'
+import { DB } from './Database'
 import { IDBTables, OptionsType, TimeStampsType } from './types'
 import { ClassConstructor, plainToInstance } from 'class-transformer'
 import ArraySorter from './array-sorter'
 
-export default class Model<DataType extends Optional<TimeStampsType>> {
+export default class Model<T extends Optional<TimeStampsType>> {
   constructor(
     private readonly db: IDBDatabase,
     private readonly table: IDBTables,
+    // eslint-disable-next-line @typescript-eslint/ban-types
     private readonly tableClass: Function | null = null
   ) {}
 
-  async insert(data: Partial<DataType>): Promise<Partial<DataType>> {
+  async insert(data: Partial<T>): Promise<Partial<T>> {
     return new Promise((resolve, reject) => {
       try {
-        const verifiedInsertData: Partial<DataType> = {
-          ...DB.verifyDataTable<Partial<DataType>>(data, [this.table]),
+        const verifiedInsertData: Partial<T> = {
+          ...DB.verifyDataTable<Partial<T>>(data, [this.table]),
           ...(this.table.timestamps && {
             createdAt: Date.now(),
             updatedAt: Date.now()
           })
         }
-
-        const primary = { key: '' }
-        primary.key = getPrimaryKey(this.tableClass!) as string
 
         const request = this.db
           .transaction(this.table.name, 'readwrite')
@@ -33,28 +30,21 @@ export default class Model<DataType extends Optional<TimeStampsType>> {
 
         request.onerror = () =>
           reject(request.error || 'Unable to add data. Check the unique values')
-        request.onsuccess = () =>
-          resolve(
-            this.resolveValue({
-              ...data,
-              ...(primary.key && { [primary.key]: request.result })
-            }) as DataType
-          )
+        request.onsuccess = () => resolve(this.resolveValue(data) as T)
       } catch (error) {
         return reject(error)
       }
     })
   }
 
-  public async selectByPk(pKey: IDBValidKey | IDBKeyRange): Promise<DataType> {
+  public async selectByPk(pKey: IDBValidKey | IDBKeyRange): Promise<T> {
     return new Promise((resolve, reject) => {
       const transaction = this.db.transaction(this.table.name, 'readonly')
       const objectStore = transaction.objectStore(this.table.name)
       const request = objectStore.get(pKey)
       request.onerror = () =>
         reject(request.error || `Unable to retrieve data from the model`)
-      request.onsuccess = () =>
-        resolve(this.resolveValue(request.result) as DataType)
+      request.onsuccess = () => resolve(this.resolveValue(request.result) as T)
     })
   }
 
@@ -72,14 +62,14 @@ export default class Model<DataType extends Optional<TimeStampsType>> {
     })
   }
 
-  selectAll(): Promise<DataType[]> {
+  selectAll(): Promise<T[]> {
     return new Promise((resolve, reject) => {
       const objectStore = this.db
         .transaction(this.table.name, 'readonly')
         .objectStore(this.table.name)
-      const request: IDBRequest<DataType[]> = objectStore.getAll()
+      const request: IDBRequest<T[]> = objectStore.getAll()
       request.onsuccess = () =>
-        resolve(this.resolveValue(request.result) as DataType[])
+        resolve(this.resolveValue(request.result) as T[])
       request.onerror = () =>
         reject(request.error || "Can't get data from database")
     })
@@ -101,30 +91,21 @@ export default class Model<DataType extends Optional<TimeStampsType>> {
    * @description This method is used to update data in the table by primary key.
    * It combines original and updateData and the same keys will be overridden.
    */
-  updateByPk(
+  updateByPk<T>(
     pKey: IDBValidKey | IDBKeyRange,
-    dataToUpdate: Partial<DataType>
-  ): Promise<DataType> {
+    dataToUpdate: Partial<T>
+  ): Promise<T> {
     return new Promise((resolve, reject) => {
       this.selectByPk(pKey).then(fetchedData => {
         const transaction = this.db.transaction(this.table.name, 'readwrite')
         const store = transaction.objectStore(this.table.name)
         const data = Object.assign(fetchedData, dataToUpdate)
-        const primary = { key: '' }
-        if (this.tableClass) {
-          primary.key = getPrimaryKey(this.tableClass) as string
-        }
 
         if (this.table.timestamps) data.createdAt = Date.now()
         const save = store.put(data)
         save.onerror = () => reject(save.error || `Couldn't update data`)
         save.onsuccess = () => {
-          resolve(
-            this.resolveValue({
-              ...data,
-              ...(primary.key && { [primary.key]: save.result })
-            }) as DataType
-          )
+          resolve(this.resolveValue(data) as T)
         }
       })
     })
@@ -143,9 +124,9 @@ export default class Model<DataType extends Optional<TimeStampsType>> {
   /**
    * @description This method is used to select data from the table.
    */
-  async select(options: OptionsType<DataType>) {
+  async select(options: OptionsType<T>) {
     const data = await this.selectAll()
-    let result: DataType[] = []
+    let result: any[] = []
     if (Reflect.has(options, 'where') && options.where) {
       if (!data) return []
 
@@ -158,7 +139,8 @@ export default class Model<DataType extends Optional<TimeStampsType>> {
           for (const key of whereKeys) {
             if (
               dataKeys.includes(key) &&
-              (item as any)[key] === (options.where as Function)[key]
+              // eslint-disable-next-line @typescript-eslint/ban-types
+              (item as any)[key] === (options.where as any)[key]
             )
               return true
             return false
@@ -168,7 +150,7 @@ export default class Model<DataType extends Optional<TimeStampsType>> {
     }
 
     if (Reflect.has(options, 'sortBy') && options.sortBy) {
-      result = new ArraySorter<DataType>(result).sortBy({
+      result = new ArraySorter<T>(result).sortBy({
         desc: Reflect.has(options, 'orderByDESC') && options.orderByDESC,
         keys: [options.sortBy as string]
       })
@@ -182,15 +164,15 @@ export default class Model<DataType extends Optional<TimeStampsType>> {
   }
 
   private resolveValue(
-    value: Partial<DataType> | Partial<DataType>[]
-  ): Partial<DataType> | Partial<DataType>[] {
+    value: Partial<T> | Partial<T>[]
+  ): Partial<T> | Partial<T>[] {
     if (this.tableClass) {
       if (Array.isArray(value)) {
         return value.map(item =>
-          plainToInstance(<ClassConstructor<DataType>>this.tableClass, item)
+          plainToInstance(<ClassConstructor<T>>this.tableClass, item)
         )
       }
-      plainToInstance(<ClassConstructor<DataType>>this.tableClass, value)
+      plainToInstance(<ClassConstructor<T>>this.tableClass, value)
     }
     return value
   }

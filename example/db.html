@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IndexedDB Test</title>
+    <script >
+        
+    </script>
+</head>
+<body>
+    <h1>Look the Console</h1>
+    <script type="module">
+        import { DB } from '../packages/db/dist/db.esm-bundler.js'
+        const tables = [{
+            name: 'messages',
+            primaryKey: {
+                name: 'msgId',
+                autoIncrement:false,
+                unique: true
+            },
+             initData: [
+                { msgId: '112233', content: '你好', type: 1 },
+                { msgId: '112234', content: '第二条信息', type: 2 }
+            ],
+            indexes: {
+                 msgId: { unique: true, multiEntry: false },
+            },
+            timestamps: true
+        }]
+        const database = new DB({
+            name: 'example__db',
+            version: 2,
+            tables
+        }) 
+
+        database.connect().then(res => {
+            console.log(database.connection)
+        }).catch(err => console.error(err))
+    </script>
+</body>
+
+</html>

@@ -1,6 +1,14 @@
+import { Optional } from 'utility-types'
 import { DBError } from './error'
+import Model from './model'
 import { configSchema } from './schema'
-import { IDBConfig, IDBTables, SchemaResult, ValueOf } from './types'
+import {
+  IDBConfig,
+  IDBTables,
+  SchemaResult,
+  TimeStampsType,
+  ValueOf
+} from './types'
 
 const generateSchemaErrorMessage = (
   errors: ValueOf<Pick<SchemaResult, 'errors'>>,
@@ -22,7 +30,7 @@ export class DB {
 
   databaseVersion: number
 
-  private _db: IDBDatabase | null = null
+  private _db: IDBDatabase | undefined = undefined
 
   constructor(protected readonly schema: IDBConfig) {
     if (Array.isArray(schema)) {
@@ -211,5 +219,35 @@ export class DB {
     return data
   }
 
-  // public useModel(target: new () => )
+  public useModel<U>(target: new () => U): Model<U & Optional<TimeStampsType>>
+  public useModel<U>(target: string): Model<U & Optional<TimeStampsType>>
+  public useModel<U>(
+    target: string | ((new () => U) & Optional<TimeStampsType>)
+  ) {
+    if (!this.connection)
+      throw new Error('Database is not connected. Did you call .connect()?')
+
+    const tableName = { value: '' }
+    if (typeof target === 'string') tableName.value = target
+    if (!tableName.value) throw new Error('Invalid tableName or tableClass.')
+
+    if (!this.tablesName.includes(tableName.value)) {
+      throw new Error(
+        `[${this.databaseName}]: Table [${tableName.value}] does not exist.`
+      )
+    }
+
+    const table = (this.config as IDBConfig).tables.find(
+      ({ name }) => name === tableName.value
+    ) as IDBTables
+
+    if (typeof target === 'string') {
+      return new Model<U & Optional<TimeStampsType>>(
+        this.connection as IDBDatabase,
+        table
+      )
+    }
+
+    return new Model(this.connection as IDBDatabase, table, target)
+  }
 }
