@@ -29,14 +29,32 @@
             },
             timestamps: true
         }]
-        const database = new DB({
+        const db = new DB({
             name: 'example__db',
             version: 2,
             tables
         }) 
 
-        database.connect().then(res => {
-            console.log(database.connection)
+        db.connect().then(res => {
+            const model = db.useModel('messages')
+            console.log('model', model)
+
+            model.insert({
+                msgId:'112235',
+                content:'使用model插入的消息',
+                type:2
+            }).then(data => {
+                 console.info('Yay. data has been saved!', { data });
+            }).catch(_ => {})
+            model.selectAll().then(function (results) {
+                // console.log(...results);
+            })
+
+            // model.selectByPk('112234').then(data => console.log(data))
+            // model.selectByIndex('msgId',  '112233').then(data => console.log(data))
+            // model.updateByPk('112235', {content: '使用model插入的消息，但经过update了'}).then(data => console.log(data))
+            model.deleteByPk('112235').then(data => console.info(data))
+
         }).catch(err => console.error(err))
     </script>
 </body>

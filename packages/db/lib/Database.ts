@@ -102,7 +102,7 @@ export class DB {
         this._db.onversionchange = () => {
           console.info(`[${this.databaseName}]: Database version changed.`)
           console.info(`[${this.databaseName}]: Connected closed.`)
-          this._db!.close()
+          this._db?.close()
         }
         return resolve(this._db)
       }
@@ -197,6 +197,7 @@ export class DB {
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/ban-types
   public static verifyDataTable<T extends Object>(
     data: T,
     tables: IDBTables[]
@@ -241,13 +242,9 @@ export class DB {
       ({ name }) => name === tableName.value
     ) as IDBTables
 
-    if (typeof target === 'string') {
-      return new Model<U & Optional<TimeStampsType>>(
-        this.connection as IDBDatabase,
-        table
-      )
-    }
-
-    return new Model(this.connection as IDBDatabase, table, target)
+    return new Model<U & Optional<TimeStampsType>>(
+      this.connection as IDBDatabase,
+      table
+    )
   }
 }

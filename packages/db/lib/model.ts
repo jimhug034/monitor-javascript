@@ -1,15 +1,12 @@
 import { Optional } from 'utility-types'
 import { DB } from './Database'
 import { IDBTables, OptionsType, TimeStampsType } from './types'
-import { ClassConstructor, plainToInstance } from 'class-transformer'
 import ArraySorter from './array-sorter'
 
 export default class Model<T extends Optional<TimeStampsType>> {
   constructor(
     private readonly db: IDBDatabase,
-    private readonly table: IDBTables,
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    private readonly tableClass: Function | null = null
+    private readonly table: IDBTables
   ) {}
 
   async insert(data: Partial<T>): Promise<Partial<T>> {
@@ -166,14 +163,6 @@ export default class Model<T extends Optional<TimeStampsType>> {
   private resolveValue(
     value: Partial<T> | Partial<T>[]
   ): Partial<T> | Partial<T>[] {
-    if (this.tableClass) {
-      if (Array.isArray(value)) {
-        return value.map(item =>
-          plainToInstance(<ClassConstructor<T>>this.tableClass, item)
-        )
-      }
-      plainToInstance(<ClassConstructor<T>>this.tableClass, value)
-    }
     return value
   }
 }
